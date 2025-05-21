@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Referrer Leak CTF Lab</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.8/purify.min.js"></script>
+  <style>
+    body {
+      background-color: #111;
+      color: #00ff88;
+      font-family: monospace;
+      padding: 20px;
+    }
+
+    h1, h2 {
+      color: #00ffaa;
+    }
+
+    .token-box {
+      border: 1px dashed #00ff88;
+      padding: 10px;
+      margin-bottom: 20px;
+      background-color: #1a1a1a;
+    }
+
+    .form-container {
+      margin-bottom: 30px;
+    }
+
+    textarea {
+      width: 100%;
+      background-color: #222;
+      color: #00ff88;
+      border: 1px solid #00ff88;
+      font-family: monospace;
+      padding: 8px;
+    }
+
+    button {
+      background-color: #00ff88;
+      color: #000;
+      border: none;
+      padding: 8px 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .comment {
+      background-color: #1a1a1a;
+      border: 1px solid #00ff88;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+
+    .hint {
+      font-size: 0.95em;
+      color: #66ffcc;
+      margin-top: 10px;
+    }
+
+    a {
+      color: #00ffaa;
+    }
+  </style>
+</head>
+<body>
+  <h1>Referrer Leak Lab</h1>
+
+  <div class="token-box">
+    <p><strong>Your goal:</strong> Leak the secret token below to your controlled server.</p>
+    <p>🚩 Token in URL: <code>{{ token }}</code></p>
+    <p class="hint">Hint: You may want to investigate how referrer policies affect image loads.</p>
+  </div>
+
+  <div class="form-container">
+    <h2>Leave a comment</h2>
+    <form method="POST">
+      <textarea name="comment" rows="5" placeholder="Inject some HTML here..."></textarea><br><br>
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+
+  <h2>Comments</h2>
+  <div id="comments"></div>
+
+  <script>
+    const rawComments = {{ comments|tojson }};
+    const commentsDiv = document.getElementById("comments");
+
+    rawComments.forEach(comment => {
+      const clean = DOMPurify.sanitize(comment);
+      const div = document.createElement("div");
+      div.className = "comment";
+      div.innerHTML = clean;
+      commentsDiv.appendChild(div);
+    });
+  </script>
+</body>
+</html>
